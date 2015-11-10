@@ -31,13 +31,15 @@ namespace ForgetTheMilk.Controllers
         public Task(string task, DateTime today)
         {
             Description = task;
-            var dueDatePattern = new Regex(@"may\s(\d)");
+            var dueDatePattern = new Regex(@"(apr|may)\s(\d)");
             var hasDueDate = dueDatePattern.IsMatch(task);
             if (hasDueDate)
             {
                 var dueDate = dueDatePattern.Match(task);
-                var day = Convert.ToInt32(dueDate.Groups[1].Value);
-                DueDate = new DateTime(today.Year, 5, day);
+                var monthInput = dueDate.Groups[1].Value;
+                var month = monthInput == "may" ? 5 : 4;
+                var day = Convert.ToInt32(dueDate.Groups[2].Value);
+                DueDate = new DateTime(today.Year, month, day);
                 if (DueDate < today)
                 {
                     DueDate = DueDate.Value.AddYears(1);
