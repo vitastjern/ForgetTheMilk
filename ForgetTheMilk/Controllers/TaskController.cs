@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -31,13 +32,14 @@ namespace ForgetTheMilk.Controllers
         public Task(string task, DateTime today)
         {
             Description = task;
-            var dueDatePattern = new Regex(@"(apr|may)\s(\d)");
+            var dueDatePattern = 
+                new Regex(@"(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s(\d)");
             var hasDueDate = dueDatePattern.IsMatch(task);
             if (hasDueDate)
             {
                 var dueDate = dueDatePattern.Match(task);
                 var monthInput = dueDate.Groups[1].Value;
-                var month = monthInput == "may" ? 5 : 4;
+                var month = DateTime.ParseExact(monthInput, "MMM", CultureInfo.InvariantCulture).Month;
                 var day = Convert.ToInt32(dueDate.Groups[2].Value);
                 DueDate = new DateTime(today.Year, month, day);
                 if (DueDate < today)
