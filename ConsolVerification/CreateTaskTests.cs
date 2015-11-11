@@ -22,14 +22,16 @@ namespace ConsolVerification
         }
 
         [Test]
-        public void MayDueDateDoesWrapYear()
+        [TestCase("Pickup the groceries may 5 - as of 2015-05-31")]
+        [TestCase("Pickup the groceries apr 5 - as of 2015-05-31")]
+        public void MayDueDateDoesWrapYear(string input)
         {
-            var input = "Pickup the groceries may 5 - as of 2015-05-31";
+            
             var today = new DateTime(2015, 5, 31);
 
             var task = new Task(input, today);
 
-            Expect(task.DueDate, Is.EqualTo(new DateTime(2016, 5, 5)));
+            Expect(task.DueDate.Value.Year, Is.EqualTo(2016));
         }
 
         [Test]
@@ -57,17 +59,46 @@ namespace ConsolVerification
         [TestCase("Groceries oct 5", 10)]
         [TestCase("Groceries nov 5", 11)]
         [TestCase("Groceries dec 5", 12)]
-
-        public void AprilDueDate(string input, int expectedMonth)
+        public void DueDate(string input, int expectedMonth)
         {
             var today = new DateTime(2015, 5, 31);
 
-            var task = new Task(input, today);
+            var task = new Task(input, default(DateTime));
 
             Expect(task.DueDate, Is.Not.Null);
             Expect(task.DueDate.Value.Month, Is.EqualTo(expectedMonth));
         }
 
+        [Test]
+        public void TwoDigitDay_ParseBothDigits()
+        {
+            var input = "Groceries apr 10";
+
+            var task = new Task(input, default(DateTime));
+
+            Expect(task.DueDate.Value.Day, Is.EqualTo(10));
+        }
+
+        [Test]
+        public void DayIsPastTheLastDayOfTheMonth_DoesNotParseDueDate()
+        {
+            var input = "Groceries apr 44";
+
+            var task = new Task(input, default(DateTime));
+
+            Expect(task.DueDate, Is.Null);
+        }
+
+        [Test]
+        public void AddFeb29TaskInMarchOfYearBeforeLeapYear_ParsesDueDate()
+        {
+            var input = "Groceries feb 29";
+            var today = new DateTime(2015, 3, 1);
+
+            var task = new Task(input, today);
+
+            Expect(task.DueDate.Value, Is.EqualTo(new DateTime(2016, 2, 29)));
+        }
 
     }
 

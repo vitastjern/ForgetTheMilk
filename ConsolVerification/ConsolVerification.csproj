@@ -47,8 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LinkValidationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CreateTaskTests.cs" />
+    <Compile Include="TaskLinkTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
